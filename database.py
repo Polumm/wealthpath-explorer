@@ -56,7 +56,7 @@ def get_all_scenarios():
         rows = result.fetchall()
     scenarios = []
     for row in rows:
-        scenario_dict = dict(row._mapping)  # or row.items() in older versions
+        scenario_dict = dict(row._mapping)
         scenarios.append(scenario_dict)
     return scenarios
 
