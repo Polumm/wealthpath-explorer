@@ -14,7 +14,6 @@
   - [🧠 Model Design](#-model-design)
   - [📁 Project Structure](#-project-structure)
   - [🧰 Customization](#-customization)
-  - [🐳 Docker Support](#-docker-support)
   - [🤝 Contributing](#-contributing)
   - [📄 License](#-license)
 
@@ -41,29 +40,32 @@
 
 ## 🛠 Installation
 
-Clone the repo and install dependencies:
+Clone the repository:
 
 ```bash
 git clone https://github.com/your-username/wealthpath-explorer.git
 cd wealthpath-explorer
-python -m venv venv
-source venv/bin/activate  # Windows: venv\Scripts\activate
-pip install -r requirements.txt
 ```
 
 ---
 
 ## ▶️ Usage
 
-Launch the app locally with:
+To start the app locally via Docker:
 
 ```bash
-python app.py
+./build.sh
 ```
 
-Then navigate to [http://0.0.0.0:8050](http://0.0.0.0:8050) in your browser.
+This launches:
+- A Dash web app for simulation and visualization
+- A PostgreSQL container to persist user-defined scenarios
 
-Behind the scenes, this workflow is driven by:
+Environment variables and volume mappings are pre-configured in `docker-compose.yml`.
+
+---
+
+In code, the workflow uses:
 
 ```python
 import numpy as np
@@ -71,11 +73,11 @@ import plotly.graph_objs as go
 from model import advanced_asset_model
 ```
 
-For each user-defined scenario:
-- Inputs are passed to `advanced_asset_model()` to compute total asset values over time.
-- The resulting series is plotted with Plotly (`go.Figure`, `go.Scatter`), with differences embedded in hover templates.
-- Common parameters across scenarios are extracted and shown as annotations above the chart.
-- Dash callbacks dynamically update visuals and form states based on user interaction.
+For each scenario:
+- Inputs are passed to `advanced_asset_model()` to compute year-by-year asset trajectories.
+- A Plotly figure displays results with interactive hover templates.
+- Common parameters across scenarios are extracted and displayed.
+- Dash callbacks handle updates from the user interface in real time.
 
 ---
 
@@ -87,21 +89,21 @@ At the core of the application lies a powerful simulation engine:
 from model import advanced_asset_model
 ```
 
-This function simulates wealth accumulation over time, using:
+This function models:
 
-- **Nominal returns** on both investment and savings accounts
-- **Income growth** with controllable fractions directed toward consumption, savings, and investment
-- **Time horizon** and **starting age** to determine age-based asset projections
+- **Growth from initial assets**
+- **Ongoing contributions from income**, split between investing and saving
+- **Nominal returns** on investment and savings
+- **Customizable time horizon** and **starting age**
 
-It returns multiple time series including:
-- Total asset balance
-- Separate investment and savings accounts
-- Initial lump-sum growth vs. new income contributions
-- Nominal incomes per year
+Returns include:
 
-This separation allows for **fine-grained analysis** and traceable sources of asset growth.
+- `total_assets`: total net worth across time
+- `investment_account` and `savings_account`: tracked separately
+- `initial_asset_only` and `income_contribution_only`: helpful for decomposition
+- `incomes`: nominal income per year
 
-> Inflation is accepted as input but currently unused—allowing for future extensions to real-return modeling.
+> *Note: Inflation is accepted as input but not applied in current calculations.*
 
 ---
 
@@ -124,37 +126,21 @@ wealthpath-explorer/
 
 ## 🧰 Customization
 
-You can easily extend or adapt the app:
+You can tailor the app to your needs:
 
-- `model.py`: modify the accumulation logic, add inflation-adjusted modeling, or include taxes
-- `plots.py`: enhance layout or interactivity, e.g., add confidence bands or alternate views
-- `database.py`: replace the default database layer or connect to cloud storage
-
----
-
-## 🐳 Docker Support
-
-You can spin up the full application using Docker:
-
-```bash
-docker-compose up --build
-```
-
-This launches both the web app and a PostgreSQL container to persist user-defined scenarios. Environment variables and volume mounting are already configured in `docker-compose.yml`.
+- `model.py`: adjust assumptions, returns, or structure of the simulation
+- `plots.py`: add more metrics, adjust hover logic, or change the layout
+- `database.py`: switch from in-memory or file-based to a cloud database
 
 ---
 
 ## 🤝 Contributing
 
-Contributions are welcome! Feel free to fork the repo and submit a pull request. For large changes, open an issue first to discuss your ideas with the maintainers.
+We welcome contributions!  
+Fork the repo and submit a pull request, or open an issue to start a discussion.
 
 ---
 
 ## 📄 License
 
 Licensed under the [Apache License, Version 2.0](https://www.apache.org/licenses/LICENSE-2.0).  
-You may use, modify, and distribute this software under the terms of that license.
-
----
-
-> **Developed by Polumm** — empowering financial literacy through interactive simulation.
