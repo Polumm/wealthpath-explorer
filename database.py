@@ -23,7 +23,8 @@ with engine.connect() as conn:
         annual_return_savings DOUBLE PRECISION,
         income_growth_rate DOUBLE PRECISION,
         inflation_rate DOUBLE PRECISION,
-        years INTEGER
+        years INTEGER,
+        starting_age INTEGER DEFAULT 30
     );
     """)
     conn.execute(create_table_stmt)
@@ -35,11 +36,11 @@ def insert_scenario(params):
     INSERT INTO scenarios (
         label, initial_asset, annual_income_initial, invest_fraction, 
         save_fraction, consumption_fraction, annual_return_investment,
-        annual_return_savings, income_growth_rate, inflation_rate, years
+        annual_return_savings, income_growth_rate, inflation_rate, years, starting_age
     ) VALUES (
         :label, :initial_asset, :annual_income_initial, :invest_fraction,
         :save_fraction, :consumption_fraction, :annual_return_investment,
-        :annual_return_savings, :income_growth_rate, :inflation_rate, :years
+        :annual_return_savings, :income_growth_rate, :inflation_rate, :years, :starting_age
     ) RETURNING id
     """)
     with engine.connect() as conn:
@@ -88,7 +89,8 @@ def update_scenario(params):
         annual_return_savings = :annual_return_savings,
         income_growth_rate = :income_growth_rate,
         inflation_rate = :inflation_rate,
-        years = :years
+        years = :years,
+        starting_age = :starting_age
     WHERE id = :id
     """)
     with engine.connect() as conn:
